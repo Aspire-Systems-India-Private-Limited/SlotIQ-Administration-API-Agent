@@ -1,0 +1,348 @@
+openapi: 3.0.3
+info:
+  title: SlotIQ Administration Aggregate Entities
+  description: |
+    Administration aggregate root and related entities for SlotIQ Administration system.
+    This file defines all administration-related entity schemas.
+  version: 1.0.0
+
+components:
+  schemas:
+    # Base Entity Pattern
+    BaseEntity:
+      type: object
+      description: Base entity pattern with audit fields
+      properties:
+        isActive:
+          type: boolean
+          description: Soft delete flag - true for active records, false for deleted
+        createdDate:
+          type: string
+          format: date-time
+          description: UTC timestamp when entity was created
+        modifiedDate:
+          type: string
+          format: date-time
+          description: UTC timestamp when entity was last modified
+        modUser:
+          type: string
+          description: User ID who created or updated the entity
+          minLength: 1
+          maxLength: 50
+        source:
+          $ref: '#/components/schemas/Source'
+          description: Source system of the operation
+      required:
+        - isActive
+        - createdDate
+        - modifiedDate
+        - modUser
+        - source
+
+    # Enum Definitions
+    Source:
+      type: integer
+      format: int32
+      enum: [1, 2, 3, 4, 5]
+      x-enumNames: [Web, Mobile, API, Thirdparty, Manual]
+      description: Source system making the change for audit tracking
+
+    # Aggregate Entities
+    Practice:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          description: Practice entity
+          properties:
+            practiceID:
+              type: string
+              format: uuid
+              description: Unique system generated ID
+            name:
+              type: string
+              minLength: 2
+              maxLength: 50
+              description: Name of the Practice (Not Empty, Max 50 Chars)
+            description:
+              type: string
+              description: Short description about the practice purpose
+              maxLength: 500
+              nullable: true
+          required:
+            - practiceID
+            - name
+
+    MemberRole:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          description: MemberRole entity
+          properties:
+            roleID:
+              type: string
+              format: uuid
+              description: Unique Id
+            name:
+              type: string
+              description: Unique Name for Applications (MasterAdmin, PracticeAdmin, TechPanelMember, TAAdmin, TAPanelMember)
+            displayName:
+              type: string
+              description: Name for displaying in UI, Reports, Emails, etc.
+          required:
+            - roleID
+            - name
+            - displayName
+
+    Permission:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          description: Permission entity
+          properties:
+            permissionID:
+              type: string
+              format: uuid
+              description: Unique Id
+            name:
+              type: string
+              description: Unique name for the Application (e.g., CanCreatePractice, CanCreateHiringOpportunity, CanAddAvilabilitySlots)
+            displayName:
+              type: string
+              description: Name for displaying in UI, Reports, Emails, etc.
+          required:
+            - permissionID
+            - name
+            - displayName
+
+    RolePermissionsMapping:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          description: RolePermissionsMapping entity
+          properties:
+            rolePermissionMappingID:
+              type: string
+              format: uuid
+              description: Unique Id
+            roleID:
+              type: string
+              format: uuid
+              description: RoleID Mapping
+            permissionID:
+              type: string
+              format: uuid
+              description: PermissionID Mapping
+          required:
+            - rolePermissionMappingID
+            - roleID
+            - permissionID
+
+    OpportunityCategory:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          description: OpportunityCategory entity
+          properties:
+            opportunityCategoryID:
+              type: string
+              format: uuid
+              description: Unique Id
+            name:
+              type: string
+              description: Unique name for Opportunity Category (Forecast, Ondemand, Client Request)
+            displayName:
+              type: string
+              description: Name for displaying in UI, Reports, Emails, etc.
+          required:
+            - opportunityCategoryID
+            - name
+            - displayName
+
+    CandidateDesignation:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          description: CandidateDesignation entity
+          properties:
+            candidateDesignationID:
+              type: string
+              format: uuid
+              description: Unique Id
+            name:
+              type: string
+              description: Unique name for Candidate Designation (Full Stack SSE, Front End SSE, Back End SSE, DB Developer)
+            displayName:
+              type: string
+              description: Name for displaying in UI, Reports, Emails, etc.
+          required:
+            - candidateDesignationID
+            - name
+            - displayName
+
+    InterviewRescheduleReason:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          description: InterviewRescheduleReason entity
+          properties:
+            rescheduleHistoryReasonID:
+              type: string
+              format: uuid
+              description: Unique ID
+            name:
+              type: string
+              description: Unique name for Rescheduling reasons (Unplanned Leave, Project priority, Client Calls)
+            displayName:
+              type: string
+              description: Name for displaying in UI, Reports, Emails, etc.
+          required:
+            - rescheduleHistoryReasonID
+            - name
+            - displayName
+
+    AvailabilityRePlanHistoryReason:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          description: AvailabilityRePlanHistoryReason entity
+          properties:
+            availabilityRePlanHistoryReasonID:
+              type: string
+              format: uuid
+              description: Unique ID
+            name:
+              type: string
+              description: Unique name for Replan reasons (Planned Leave, Project priority, Others)
+            displayName:
+              type: string
+              description: Name for displaying in UI, Reports, Emails, etc.
+          required:
+            - availabilityRePlanHistoryReasonID
+            - name
+            - displayName
+
+    InterviewType:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          description: InterviewType entity
+          properties:
+            interviewTypeID:
+              type: string
+              format: uuid
+              description: Unique ID
+            name:
+              type: string
+              description: Unique name for Interview Type (WeekDays-Scheduled, WeekDay-Walkin, Weekend-Scheduled, Weekend-Walkin)
+            displayName:
+              type: string
+              description: Name for displaying in UI, Reports, Emails, etc.
+          required:
+            - interviewTypeID
+            - name
+            - displayName
+
+    InterviewScheduleType:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          description: InterviewScheduleType entity
+          properties:
+            interviewScheduleTypeID:
+              type: string
+              format: uuid
+              description: Unique ID
+            name:
+              type: string
+              description: Unique name for ScheduleType (New, Rescheduled)
+            displayName:
+              type: string
+              description: Name for displaying in UI, Reports, Emails, etc.
+          required:
+            - interviewScheduleTypeID
+            - name
+            - displayName
+
+    AvailabilityPlanType:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          description: AvailabilityPlanType entity
+          properties:
+            availabilityPlanTypeID:
+              type: string
+              format: uuid
+              description: Unique ID
+            name:
+              type: string
+              description: Unique name for Availability Plan Type (New, Replan)
+            displayName:
+              type: string
+              description: Name for displaying in UI, Reports, Emails, etc.
+          required:
+            - availabilityPlanTypeID
+            - name
+            - displayName
+
+    InterviewScheduleStatus:
+      allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          description: InterviewScheduleStatus entity
+          properties:
+            scheduleStatusID:
+              type: string
+              format: uuid
+              description: Unique ID
+            name:
+              type: string
+              description: Unique name for Interview Schedule Status Plan (Completed, Scheduled, Cancelled)
+            displayName:
+              type: string
+              description: Name for displaying in UI, Reports, Emails, etc.
+          required:
+            - scheduleStatusID
+            - name
+            - displayName
+
+    RecruitmentPosition:
+        allOf: 
+          - $ref: '#/components/schemas/BaseEntity'
+          - type: object
+            description: RecruitmentPosition entity
+            properties:
+              recruitmentPositionID:
+                type: string
+                format: uuid
+                description: Unique ID
+              name:
+                type: string
+                description: Unique name for Recruitment Position (Internal, External, Referral)
+              displayName:
+                type: string
+                description: Name for displaying in UI, Reports, Emails, etc.
+            required:
+              - recruitmentPositionID
+              - name
+              - displayName
+
+    ApplicableLevel:
+        allOf:
+        - $ref: '#/components/schemas/BaseEntity'
+        - type: object
+          description: ApplicableLevel entity
+          properties:
+            applicableLevelID:
+              type: string
+              format: uuid
+              description: Unique ID
+            name:
+              type: string
+              description: Unique name for Applicable Level (Junior, Mid, Senior, Lead)
+            displayName:
+              type: string
+              description: Name for displaying in UI, Reports, Emails, etc.
+          required:
+            - applicableLevelID
+            - name
+            - displayName

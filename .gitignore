@@ -1,0 +1,27 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+.history/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+
+# NuGet
+*.nupkg
+.nuget/
+
+# Others
+*.log
+*.vs/
+TestResults/
+
+# Keep empty folders
+# Place a .gitkeep file in any folder you want to keep if empty
